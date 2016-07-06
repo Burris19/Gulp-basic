@@ -8,7 +8,9 @@ var gulp        = require('gulp'),
     concat      = require('gulp-concat'),
     uglify      = require('gulp-uglify'),
     imagemin    = require('gulp-imagemin'),
-    del         = require('del');
+    del         = require('del'),
+    browserify  = require('browserify'),
+    transform   = require('vinyl-source-stream');
 
 var isProduction;
 
@@ -62,6 +64,13 @@ gulp.task('imagemin', function(){
 gulp.task('cleanup', function(){
     del(config.cssDir + '/maps/*');
     del(config.cssDir + '/maps/');
+});
+
+gulp.task('browserify', function(){
+    return browserify(config.jsDir + '/src/main.js')
+    .bundle()
+    .pipe(transform('bundle.js'))
+    .pipe(gulp.dest(config.jsDir + '/min/'))
 });
 
 gulp.task('watch', function(){
