@@ -10,7 +10,8 @@ var gulp        = require('gulp'),
     imagemin    = require('gulp-imagemin'),
     del         = require('del'),
     browserify  = require('browserify'),
-    transform   = require('vinyl-source-stream');
+    transform   = require('vinyl-source-stream'),
+    sync        = require('browser-sync').create();
 
 var isProduction;
 
@@ -34,6 +35,7 @@ gulp.task('style', function(){
    .on('error', sass.logError) // 
    .pipe(gulpif(isProduction, cssnano(), sourcemaps.write('maps') )) //minificamos el css antes de ser escrito   
    .pipe(gulp.dest(config.cssDir)) // Indicamos donde queremos guardar los estilos
+   .pipe(sync.stream())
 });
 
 gulp.task('concat', function(){
@@ -71,6 +73,22 @@ gulp.task('browserify', function(){
     .bundle()
     .pipe(transform('bundle.js'))
     .pipe(gulp.dest(config.jsDir + '/min/'))
+});
+
+gulp.task('js-sync', ['compress'], function(){
+    sync.reload();
+})
+
+gulp.task('browsersync', ['compress', 'style'], function(){
+    sync.init({
+       proxy: "C:/laragon/www/gulp/index.html",
+       browser: "google chrome"
+    });
+    
+    gulp.watch('./*.html').on('change', sync.reload);
+    gulp.watch(config.scssDir + '/**/*.scss', ['style']);
+    gulp.watch(config.jsDir + '/*.js', ['js-sync'])
+    
 });
 
 gulp.task('watch', function(){
