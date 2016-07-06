@@ -4,7 +4,9 @@ var gulp        = require('gulp'),
     sourcemaps  = require('gulp-sourcemaps'),
     cssnano     = require('gulp-cssnano'),
     argv        = require('yargs').argv,
-    gulpif      = require('gulp-if');
+    gulpif      = require('gulp-if'),
+    concat      = require('gulp-concat'),
+    uglify      = require('gulp-uglify');
 
 var isProduction;
 
@@ -16,11 +18,12 @@ if(argv.prod) {
 
 var config = {
     scssDir: './assets/scss',
-    cssDir:  './assets/css'
+    cssDir:  './assets/css',
+    jsDir:   './assets/js'
 };
 
 gulp.task('style', function(){
-   gulp.src(config.scssDir + '/*.scss') // Indicamos que archivos queremos compilar
+   return gulp.src(config.scssDir + '/*.scss') // Indicamos que archivos queremos compilar
    .pipe(sourcemaps.init())
    .pipe(sass())   
    .on('error', sass.logError) // 
@@ -28,6 +31,23 @@ gulp.task('style', function(){
    .pipe(gulp.dest(config.cssDir)) // Indicamos donde queremos guardar los estilos
 });
 
+gulp.task('concat', function(){
+    return gulp.src([
+        config.jsDir + '/start.js',
+        config.jsDir + '/main.js',
+        config.jsDir + '/end.js',
+        
+    ])
+    .pipe(concat('scripts.js'))
+    .pipe(gulp.dest(config.jsDir))
+});
+
+gulp.task('compress', ['concat'] , function(){
+   return gulp.src(config.jsDir + '/scripts.js') 
+   .pipe(uglify())
+   .on('error', console.error.bind(console))
+   .pipe(gulp.dest(config.jsDir + '/min'))
+});
 
 gulp.task('watch', function(){
     watch(config.scssDir + '/**/*.scss', function(){
