@@ -1,0 +1,17 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  color: #333; }
+
+.wrap {
+  margin: 0 auto; }
+
+h1 {
+  font-size: 2em;
+  color: #E34c45;
+  margin: 0 0 1em 0; }
+
+h2 {
+  font-z: 1.5em;
+  margin: 0 0 1em 0;
+  color: #40c4d5; }
