@@ -7,7 +7,8 @@ var gulp        = require('gulp'),
     gulpif      = require('gulp-if'),
     concat      = require('gulp-concat'),
     uglify      = require('gulp-uglify'),
-    imagemin    = require('gulp-imagemin');
+    imagemin    = require('gulp-imagemin'),
+    del         = require('del');
 
 var isProduction;
 
@@ -52,18 +53,20 @@ gulp.task('compress', ['concat'] , function(){
 });
 
 gulp.task('imagemin', function(){
-    return gulp.src([
-        config.imgDir + '/*.png',
-        config.imgDir + '/*.jpg',
-        config.imgDir + '/*.jpeg'
-    ])
+    return gulp.src(config.imgDir + '/*.+(png|jpg|jpeg)')
     .pipe(imagemin())
     .pipe(gulp.dest(config.imgDir + '/'))
         
 })
+
+gulp.task('cleanup', function(){
+    del(config.cssDir + '/maps/*');
+    del(config.cssDir + '/maps/');
+});
 
 gulp.task('watch', function(){
     watch(config.scssDir + '/**/*.scss', function(){
         gulp.start('style'); // indica a la funcion de wath que invoque la tarea que indicamos        
     });
 });
+
